@@ -1,17 +1,25 @@
+const pipe = functions => data => {
+  return functions.reduce( (value, func) => func(value), data);
+  };
+  
 const markdownToHtml = (markdownText) => {
   let lines = markdownText.split("\n");
   let response = '';
-  let pointElement = '';
-  let continuousPoints = 0
+  let prevLine = '';
 
   lines.forEach(function(line){
-    continuousPoints = (line.substr(0,2) != '* ')? 0 : continuousPoints + 1
-    console.log(continuousPoints, pointElement)
-    if(continuousPoints  === 0 && pointElement != ''){
+
+    // Determina si se acaba de terminar un punteo
+    const ulFinished = pipe( [
+      x => x.substring(0,2), 
+      x => x != '* ', 
+      x => x && prevLine.substring(0,2) == '* ' 
+    ] )(line);
+
+    if(ulFinished){
       response += '</ul>\n'
     }
     
-    pointElement = (continuousPoints === 1)? 'ul' : ((continuousPoints !== 0)? 'li' : '')
     const htmlLine = line
       // Replace #
       .replace(/^#\s(.*)$/gm, '<h1>$1</h1>')
@@ -26,10 +34,11 @@ const markdownToHtml = (markdownText) => {
       .replace(/\*\*(.*)\*\*/gm, '<strong>$1</strong>')
       .replace(/\*(.*)\*/gm, '<em>$1</em>')
       // Replace *
-      .replace(/^\*\s(.*)$/gm, (pointElement == 'ul')? '<ul>\n     <li>$1</li>' : '     <li>$1</li>')
+      .replace(/^\*\s(.*)$/gm, (prevLine.substring(0,2) !== '* ') ? '<ul>\n     <li>$1</li>' : '     <li>$1</li>')
       // Replace new paragraph
       .replace(/^(?!<| )(.*)$/gm, '<p>$1</p>')
     response += `${htmlLine}\n`;
+    prevLine = line;
   })
   return response;
 }

@@ -4,7 +4,7 @@ const pipe = functions => data => {
   return functions.reduce( (value, func) => func(value), data);
   };
 
-ConvertHeaders = (line) => 
+const ConvertHeaders = (line) => 
   line
       .replace(/^#\s(.*)$/gm, '<h1>$1</h1>')
       .replace(/^##\s(.*)$/gm, '<h2>$1</h2>')
@@ -13,13 +13,13 @@ ConvertHeaders = (line) =>
       .replace(/^#####\s(.*)$/gm, '<h5>$1</h5>')
       .replace(/^######\s(.*)$/gm, '<h6>$1</h6>')
 
-ConvertTextTypes = (line) =>
+const ConvertTextTypes = (line) =>
   line
       .replace(/\*\*(.*)\*\*/gm, '<strong>$1</strong>')
       .replace(/\*(.*)\*/gm, '<em>$1</em>')
 
 
-ConvertTextStructure = (prevLine, line) => 
+const ConvertTextStructure = (prevLine, line) => 
   line
       .replace(/^\>\s(.*)$/gm, '<blockquote>$1</blockquote>')
       .replace(/^\*\s(.*)$/gm, (prevLine.substring(0,2) !== '* ') ? '<ul>\n     <li>$1</li>' : '     <li>$1</li>')
@@ -30,8 +30,7 @@ const markdownToHtml = (markdownText) => {
   let lines = markdownText.split("\n");
   let prevLine = '';
 
-  let htmlLines = _.reduce(lines, function (result, line) {
-
+  let html = _.reduce(lines, function (result, line) {
     result +=  pipe([
                   x => x = (x.substring(0,2) != '* ' && prevLine.substring(0,2) == '* ')? '</ul>\n' + x: x, // Determina si se acaba de terminar un punteo (ul)
                   x => ConvertHeaders(x),
@@ -40,23 +39,32 @@ const markdownToHtml = (markdownText) => {
                   x => `${x}\n`
                 ])(line)
                 
-
     prevLine = line;
     
     return result;
   }, '');
 
-  return htmlLines
+  return _.replace(html, /<p><\/p>\n/g, '')
 }
 
 
 const markdownText = 
-`# Hello World
-This **is** a sample *paragraph*.
-* Bullet point 1
-* Bullet point 2
-* Bullet point 3
-## Subheading
-> This is a blockquote.`;
+`# El formato Markdown
+## Parte 1
+El formato de markdown es ampliamente utilizado porque permite describir un **contenido en forma estructurada** en forma sencilla.
+
+Por ejemplo se puede usar en *GitHub* para documentar el código, escribir manuales, etc.
+
+## Parte 2
+Markdown puede ser usado para muchas cosas. Por ejemplo la gente lo utiliza para
+
+* crear páginas web
+* publicar documentos, 
+* escribir notas
+* hacer presentaciones
+* redactar correos
+* generar documentación técnica
+* escribir libros 
+`;
 
 console.log(markdownToHtml(markdownText));

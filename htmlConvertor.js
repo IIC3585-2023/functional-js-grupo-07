@@ -3,6 +3,7 @@ const readline = require('readline').createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+var _ = require('lodash');
 
 const pipe = functions => data => {
   return functions.reduce( (value, func) => func(value), data);
@@ -32,32 +33,25 @@ ConvertTextStructure = (prevLine, line) =>
   
 const markdownToHtml = (markdownText) => {
   let lines = markdownText.split("\n");
-  let response = '';
   let prevLine = '';
 
-  lines.forEach(function(line){
+  let htmlLines = _.reduce(lines, function (result, line) {
 
-    // Determina si se acaba de terminar un punteo (ul)
-    const ulFinished = pipe( [
-      x => x.substring(0,2), 
-      x => x != '* ', 
-      x => x && prevLine.substring(0,2) == '* ' 
-    ] )(line);
+    result +=  pipe([
+                  x => x = (x.substring(0,2) != '* ' && prevLine.substring(0,2) == '* ')? '</ul>\n' + x: x, // Determina si se acaba de terminar un punteo (ul)
+                  x => ConvertHeaders(x),
+                  x => ConvertTextTypes(x),
+                  x => ConvertTextStructure(prevLine, x),
+                  x => `${x}\n`
+                ])(line)
+                
 
-    if(ulFinished){
-      response += '</ul>\n'
-    }
-
-    htmlLine = pipe([
-      x => ConvertHeaders(x),
-      x => ConvertTextTypes(x),
-      x => ConvertTextStructure(prevLine, x)
-    ])(line)
-
-    response += `${htmlLine}\n`;
     prevLine = line;
-  })
-  return response;
+    
+    return result;
+  }, '');
+
+  return htmlLines
 }
 
 

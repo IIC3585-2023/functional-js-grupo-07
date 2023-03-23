@@ -1,3 +1,9 @@
+const fs = require('fs');
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
 const pipe = functions => data => {
   return functions.reduce( (value, func) => func(value), data);
   };
@@ -55,13 +61,18 @@ const markdownToHtml = (markdownText) => {
 }
 
 
-const markdownText = 
-`# Hello World
-This **is** a sample *paragraph*.
-* Bullet point 1
-* Bullet point 2
-* Bullet point 3
-## Subheading
-> This is a blockquote.`;
 
-console.log(markdownToHtml(markdownText));
+readline.question('Name of the file to convert (without extension): ', fileName => {
+  if (fileName == "") {
+    fileName = 'example';
+  }
+  fs.readFile(`${fileName}.md`, 'utf-8', (err, data) => {
+    if (err) throw err;
+    const html = markdownToHtml(data);
+    fs.writeFile('output.html', html, (err) => {
+      if (err) throw err;
+      console.log('The file has been saved!');
+    });
+  })
+  readline.close();
+});

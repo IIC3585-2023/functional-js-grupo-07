@@ -77,8 +77,7 @@ const markdownToHtml = (markdownText) => {
     },
     ''
   );
-
-  return htmlLines;
+  return _.replace(htmlLines, /<p><\/p>\n/g, '');
 };
 
 readline.question(

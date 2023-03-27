@@ -18,7 +18,7 @@ const finishUL = (line, prevLine) => {
 };
 
 const ConvertHeaders = (line) => {
-  line = S(headerConverter)(hashtagCounter)(line);
+  line = S(headerReplacement)(hashtagCounter)(line);
   return line;
 };
 
@@ -26,7 +26,7 @@ const S = (f) => (g) => (x) => {
   return f(x)(g(x));
 };
 
-const headerConverter = (line) => (hashtagQuantity) => {
+const headerReplacement = (line) => (hashtagQuantity) => {
   if (hashtagQuantity > 0) {
     line = `<h${hashtagQuantity}>${line.substring(
       hashtagQuantity + 1
@@ -51,8 +51,8 @@ ConvertTextStructure = (prevLine, line) =>
     .replace(
       /^\*\s(.*)$/gm,
       prevLine.substring(0, 2) !== '* '
-        ? '<ul>\n     <li>$1</li>'
-        : '     <li>$1</li>'
+        ? '<ul>\n' + _.repeat(' ', 4) + '<li>$1</li>'
+        : _.repeat(' ', 4) + '<li>$1</li>'
     )
     .replace(/^(?!<| )(.*)$/gm, '<p>$1</p>');
 

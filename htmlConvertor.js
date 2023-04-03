@@ -31,7 +31,7 @@ const headerReplacement = (line) => (hashtagQuantity) => {
     return `<h${hashtagQuantity}>${line.substring(
       hashtagQuantity + 1
     )}</h${hashtagQuantity}>`;
-  }
+  } else return line;
 };
 
 const hashtagCounter = (line) => {

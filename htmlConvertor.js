@@ -28,11 +28,10 @@ const S = (f) => (g) => (x) => {
 
 const headerReplacement = (line) => (hashtagQuantity) => {
   if (hashtagQuantity > 0) {
-    line = `<h${hashtagQuantity}>${line.substring(
+    return `<h${hashtagQuantity}>${line.substring(
       hashtagQuantity + 1
     )}</h${hashtagQuantity}>`;
   }
-  return line;
 };
 
 const hashtagCounter = (line) => {
@@ -40,21 +39,27 @@ const hashtagCounter = (line) => {
 };
 
 ConvertTextTypes = (line) => {
-  return line
-    .replace(/\*\*(.*)\*\*/gm, '<strong>$1</strong>')
-    .replace(/\*(.*)\*/gm, '<em>$1</em>');
+  return (
+    line
+      // Todo texto que esté entre doble asteriscos se convierte en negrita
+      .replace(/\*\*(.*?)\*\*/gm, '<strong>$1</strong>')
+      // Todo texto que esté entre asteriscos se convierte en cursiva
+      .replace(/\*(.*?)\*/gm, '<em>$1</em>')
+      // Todo texto que tenga [texto](url) se convierte en un link
+      .replace(/\[(.*?)\]\((.*?)\)/gm, '<a href="$2">$1</a>')
+  );
 };
 
 ConvertTextStructure = (prevLine, line) =>
   line
-    .replace(/^\>\s(.*)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^\>\s(.*?)$/gm, '<blockquote>$1</blockquote>')
     .replace(
-      /^\*\s(.*)$/gm,
+      /^\*\s(.*?)$/gm,
       prevLine.substring(0, 2) !== '* '
         ? '<ul>\n' + _.repeat(' ', 4) + '<li>$1</li>'
         : _.repeat(' ', 4) + '<li>$1</li>'
     )
-    .replace(/^(?!<| )(.*)$/gm, '<p>$1</p>');
+    .replace(/^(?!<| )(.*?)$/gm, '<p>$1</p>');
 
 const markdownToHtml = (markdownText) => {
   let lines = markdownText.split('\n');

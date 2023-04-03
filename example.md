@@ -4,7 +4,7 @@
 
 El formato de markdown es ampliamente utilizado porque permite describir un **contenido en forma estructurada** en forma sencilla.
 
-Por ejemplo se puede usar en _GitHub_ para documentar el código, escribir manuales, etc.
+Por ejemplo se puede usar en *GitHub* para documentar el código, escribir manuales, etc.
 
 ## Parte 2
 
@@ -17,3 +17,8 @@ Markdown puede ser usado para muchas cosas. Por ejemplo la gente lo utiliza para
 * redactar correos
 * generar documentación técnica
 * escribir libros
+
+## Parte 3
+
+Markdown puede utilizar links
+[google](http://www.google.com)
